@@ -13,7 +13,7 @@ connection.connect(err => {
     console.error('error en la conexion', err.message);
     process.exit(1);
   }
-  console.log('Conexion exitosa', process.env.DB_NAME);
+  console.log('Conexion exitosa');
 });
 
 module.exports = connection;
