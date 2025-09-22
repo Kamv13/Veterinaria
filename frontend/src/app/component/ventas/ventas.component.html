@@ -1,0 +1,375 @@
+<!-- ventas.component.html -->
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <h1 class="text-3xl font-bold text-gray-900">Sistema de Ventas - Veterinaria</h1>
+        <button
+          (click)="abrirNuevaVenta()"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
+        >
+          + Nueva Venta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700">{{ errorMessage }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="successMessage" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-green-700">{{ successMessage }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8">
+        <button
+          (click)="changeTab('ventas')"
+          [class]="activeTab === 'ventas' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-200"
+        >
+          Ventas Realizadas
+        </button>
+        <button
+          (click)="changeTab('productos')"
+          [class]="activeTab === 'productos' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition duration-200"
+        >
+          Productos
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Tab de Ventas -->
+    <div *ngIf="activeTab === 'ventas'" class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Lista de Ventas</h3>
+      </div>
+      
+      <div *ngIf="loadingVentas" class="p-6 text-center">
+        <div class="inline-flex items-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Cargando ventas...
+        </div>
+      </div>
+
+      <div *ngIf="!loadingVentas" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendedor</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let venta of ventas" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ venta.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatearFecha(venta.fecha) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ venta.cliente_nombre }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ venta.usuario_nombre }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{{ formatearPrecio(parseFloat(venta.total)) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  (click)="verDetalle(venta)"
+                  class="text-blue-600 hover:text-blue-900 transition duration-200"
+                >
+                  Ver Detalle
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="ventas.length === 0" class="p-6 text-center text-gray-500">
+          No hay ventas registradas
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab de Productos -->
+    <div *ngIf="activeTab === 'productos'" class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Lista de Productos</h3>
+      </div>
+      
+      <div *ngIf="loadingProductos" class="p-6 text-center">
+        <div class="inline-flex items-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Cargando productos...
+        </div>
+      </div>
+
+      <div *ngIf="!loadingProductos" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let producto of productos" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ producto.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ producto.nombre }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{{ formatearPrecio(parseFloat(producto.precio)) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ producto.stock }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span 
+                  [class]="producto.stock > 10 ? 'bg-green-100 text-green-800' : producto.stock > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'"
+                  class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                >
+                  {{ producto.stock > 10 ? 'Disponible' : producto.stock > 0 ? 'Poco Stock' : 'Agotado' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="productos.length === 0" class="p-6 text-center text-gray-500">
+          No hay productos registrados
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal de Detalle de Venta -->
+<div *ngIf="showDetalleModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-4 border-b">
+        <h3 class="text-lg font-medium text-gray-900">Detalle de Venta #{{ ventaSeleccionada?.id }}</h3>
+        <button (click)="cerrarModales()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Información de la venta -->
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm text-gray-600">Cliente:</p>
+          <p class="font-medium">{{ ventaSeleccionada?.cliente_nombre }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">Vendedor:</p>
+          <p class="font-medium">{{ ventaSeleccionada?.usuario_nombre }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">Fecha:</p>
+          <p class="font-medium">{{ formatearFecha(ventaSeleccionada?.fecha) }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">Total:</p>
+          <p class="font-medium text-green-600 text-lg">{{ formatearPrecio(parseFloat(ventaSeleccionada?.total)) }}</p>
+        </div>
+      </div>
+
+      <!-- Detalle de productos -->
+      <div class="mt-6">
+        <h4 class="text-md font-medium text-gray-900 mb-3">Productos vendidos:</h4>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let item of detalleVenta">
+                <td class="px-4 py-2 text-sm text-gray-900">{{ item.producto_nombre || getNombreProducto(item.id_producto) }}</td>
+                <td class="px-4 py-2 text-sm text-gray-500">{{ item.cantidad }}</td>
+                <td class="px-4 py-2 text-sm font-medium text-green-600">{{ formatearPrecio(parseFloat(item.subtotal)) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex items-center justify-end pt-4 border-t mt-6">
+        <button
+          (click)="cerrarModales()"
+          class="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md hover:bg-gray-400 transition duration-200"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Nueva Venta -->
+<div *ngIf="showNuevaVentaModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+  <div class="relative top-10 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-md bg-white max-h-screen overflow-y-auto">
+    <div class="mt-3">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-4 border-b">
+        <h3 class="text-lg font-medium text-gray-900">Nueva Venta</h3>
+        <button (click)="cerrarModales()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Selección de Cliente y Producto -->
+        <div class="space-y-4">
+          <!-- Cliente -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Cliente:</label>
+            <select
+              [(ngModel)]="nuevaVenta.id_cliente"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="0">Seleccionar cliente...</option>
+              <option *ngFor="let cliente of clientes" [value]="cliente.id">
+                {{ cliente.nombre }} - {{ cliente.telefono }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Agregar Producto -->
+          <div class="border rounded-lg p-4 bg-gray-50">
+            <h4 class="font-medium text-gray-900 mb-3">Agregar Producto</h4>
+            
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Producto:</label>
+                <select
+                  [(ngModel)]="productoSeleccionado.id_producto"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="0">Seleccionar producto...</option>
+                  <option *ngFor="let producto of productos" [value]="producto.id" [disabled]="producto.stock === 0">
+                    {{ producto.nombre }} - {{ formatearPrecio(parseFloat(producto.precio)) }} (Stock: {{ producto.stock }})
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="productoSeleccionado.cantidad"
+                  min="1"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <button
+                (click)="agregarProducto()"
+                [disabled]="productoSeleccionado.id_producto === 0"
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-200"
+              >
+                Agregar Producto
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalle de la Venta -->
+        <div>
+          <h4 class="font-medium text-gray-900 mb-3">Detalle de la Venta</h4>
+          
+          <div *ngIf="nuevaVenta.detalle.length === 0" class="text-gray-500 text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+            No hay productos agregados
+          </div>
+
+          <div *ngIf="nuevaVenta.detalle.length > 0" class="space-y-2 max-h-60 overflow-y-auto">
+            <div *ngFor="let item of nuevaVenta.detalle; let i = index" class="flex items-center justify-between bg-white p-3 rounded-lg border">
+              <div class="flex-1">
+                <p class="font-medium text-gray-900">{{ item.producto_nombre }}</p>
+                <p class="text-sm text-gray-600">{{ formatearPrecio(item.precio) }} x {{ item.cantidad }}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="font-medium text-green-600">{{ formatearPrecio(item.subtotal) }}</span>
+                <button
+                  (click)="removerProducto(i)"
+                  class="text-red-600 hover:text-red-800 transition duration-200"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-medium text-gray-900">Total:</span>
+              <span class="text-xl font-bold text-green-600">{{ formatearPrecio(nuevaVenta.total) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex items-center justify-end space-x-3 pt-4 border-t mt-6">
+        <button
+          (click)="cerrarModales()"
+          class="px-4 py-2 bg-gray-300 text-gray-700 text-base font-medium rounded-md hover:bg-gray-400 transition duration-200"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="guardarVenta()"
+          [disabled]="nuevaVenta.id_cliente === 0 || nuevaVenta.detalle.length === 0"
+          class="px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-200"
+        >
+          Guardar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

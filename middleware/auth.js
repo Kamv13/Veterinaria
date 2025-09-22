@@ -2,16 +2,16 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-// Registro de usuario con nombre, correo y contraseña
+// Registro de usuario con nombre, correo y contrasenia
 function register(req, res) {
-  const { nombre, correo, contraseña } = req.body;
+  const { nombre, correo, contrasenia } = req.body;
 
-  // Encriptamos la contraseña antes de guardarla
-  const hashedPassword = bcrypt.hashSync(contraseña, 10);
+  // Encriptamos la contrasenia antes de guardarla
+  const hashedPassword = bcrypt.hashSync(contrasenia, 10);
 
   // Insertamos el nuevo usuario en la base de datos
   db.query(
-    'INSERT INTO usuario (nombre, correo, contraseña) VALUES (?, ?, ?)',
+    'INSERT INTO usuario (nombre, correo, contrasenia) VALUES (?, ?, ?)',
     [nombre, correo, hashedPassword],
     (err) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -20,9 +20,9 @@ function register(req, res) {
   );
 }
 
-// Login de usuario usando correo y contraseña
+// Login de usuario usando correo y contrasenia
 function login(req, res) {
-  const { correo, contraseña } = req.body;
+  const { correo, contrasenia } = req.body;
 
   // Buscamos el usuario por correo
   db.query(
@@ -34,11 +34,12 @@ function login(req, res) {
 
       const user = results[0];
 
-      // Comparamos la contraseña ingresada con la encriptada en la base de datos
-      const validPassword = bcrypt.compareSync(contraseña, user.contraseña);
+      // Comparamos la contrasenia ingresada con la encriptada en la base de datos
+      const validPassword = bcrypt.compareSync(contrasenia, user.contrasenia);
       if (!validPassword) return res.status(400).json({ message: 'Contraseña incorrecta' });
 
       // Generamos el token JWT con los datos del usuario
+
       const token = jwt.sign(
         { id: user.id, nombre: user.nombre, correo: user.correo },
         process.env.JWT_SECRET,
