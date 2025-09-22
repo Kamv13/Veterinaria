@@ -152,8 +152,8 @@ export class VentasComponent implements OnInit {
       this.mostrarError('Selecciona un producto y cantidad válida');
       return;
     }
-
-    const producto = this.productos.find(p => p.id === this.productoSeleccionado.id_producto);
+    console.log(this.productoSeleccionado)
+    const producto = this.productos.find(p => p.id == this.productoSeleccionado.id_producto);
     if (!producto) {
       this.mostrarError('Producto no encontrado');
       return;
