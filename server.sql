@@ -5,7 +5,7 @@ CREATE TABLE Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(150) NOT NULL UNIQUE,
-    contraseña VARCHAR(255) NOT NULL -- store hashed password
+    contrasenia VARCHAR(255) NOT NULL -- store hashed password
 );
 
 
